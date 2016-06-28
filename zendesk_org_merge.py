@@ -19,7 +19,8 @@ membership_url = \
 organization + '/organization_memberships.json'
 
 ## Request for organization membership data
-membership_request = requests.get(membership_url, auth = (admin, api_token)).json()
+membership_request = requests.get(membership_url, \
+auth = (admin, api_token)).json()
 
 ## List for holding user ids
 users = []
@@ -38,14 +39,81 @@ for item in membership_request['organization_memberships']:
 		str(user) + '/tickets/requested.json'
 
 		## Request for tickets
-		tickets_request = requests.get(tickets_url, auth = (admin, api_token)).json()
+		tickets_request = requests.get(tickets_url, \
+		auth = (admin, api_token)).json()
 
 		## List for tickets
 		tickets = []
 
 		## Loop through ticket data ticket ids to ticket list
 		for ticket in tickets_request['tickets']:
-			tickets.append(ticket['id'])		
+			tickets.append(ticket['id'])
 	
-	print(tickets)
+	# print(tickets)
+
+		# 3. Grab ticket meta data and comment data.
+		for ticket_id in tickets:
+			
+			## meta data URL
+			meta_url = \
+			'https://' + subdomain + '.zendesk.com/api/v2/tickets/' + \
+			str(ticket_id) + '.json'
+
+			## meta request
+			meta_request = requests.get(meta_url, \
+			auth = (admin, api_token)).json()
+
+			## comment URL
+			comment_url = \
+			'https://' + subdomain + '.zendesk.com/api/v2/tickets/' + \
+			str(ticket_id) + '/comments.json'
+
+			## comment request
+			comment_request = requests.get(comment_url, \
+			auth = (admin, api_token)).json()
+
+		# testing	
+		# print(meta_request['ticket']['subject'])
+		# print(comment_request['comments'][0]['body'])
+
+			#4. Create JSON object for ticket import
+			
+			## repository for comments on tickets
+			comment_list = []
+
+			## Creating a string of comment data, putting into a list
+			for c in comment_request['comments']:
+				comment_list.append('{"author_id": ' + str(c['author_id']) + \
+				', "value": ' + c['body'] + ', "created_at": ' \
+				+ c['created_at'] + '}, "public": ' + str(c['public']) + '}')
+
+			## testing spot check for formatting 
+			print(comment_list[0])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
