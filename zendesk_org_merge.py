@@ -1,4 +1,4 @@
-# Grab organization membership
+# 1. Grab organization membership
 
 ## import libraries
 import requests
@@ -29,5 +29,23 @@ for item in membership_request['organization_memberships']:
 	requester = item["user_id"]
 	users.append(requester)
 
-## Print out list of user ids
-print(users)
+	# 2. Make list of tickets for users
+	for user in users:
+	
+		## create URL for requested tickets by user
+		tickets_url = \
+		'https://' + subdomain + '.zendesk.com/api/v2/users/' + \
+		str(user) + '/tickets/requested.json'
+
+		## Request for tickets
+		tickets_request = requests.get(tickets_url, auth = (admin, api_token)).json()
+
+		## List for tickets
+		tickets = []
+
+		## Loop through ticket data ticket ids to ticket list
+		for ticket in tickets_request['tickets']:
+			tickets.append(ticket['id'])		
+	
+	print(tickets)
+
